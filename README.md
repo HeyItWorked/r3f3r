@@ -2,55 +2,41 @@
 
 Track specialist referrals and see which ones need a follow-up.
 
-## How it works
+A single page: one add form, one table, one status dropdown per row. Overdue is computed on the backend and never stored. Built with Vue 3 + Vite and Java 21 Spring Boot, backed by Oracle Database Free.
 
 ![Request path](docs/diagrams/architecture.svg)
 
-One page, one table, one path: native fetch through a Vite proxy to Spring, overdue computed on the way back.
-
-![API sequence](docs/diagrams/sequence.svg)
-
-Three calls: list newest-first, create as NEW (201), patch status only (200). Bad input gets 400 with field errors; unknown IDs get 404.
+One call path: native `fetch` from the browser, through a Vite proxy, to Spring. Three endpoints — list, create, patch status — and a status machine the user can reverse any time.
 
 ![Status states](docs/diagrams/state.svg)
-
-NEW → SENT → DONE, freely reversible for corrections. Saving the unchanged status is a no-op. Done → Sent re-arms overdue.
-
+![API sequence](docs/diagrams/sequence.svg)
 ![Referral record](docs/diagrams/data-model.svg)
 
-One table, six fields, zero joins. Overdue is computed on read and never stored. Fictional demo rows only (`DEMO-101`).
+## Quick start
 
-## First version
+- **Prerequisites:** Java 21+ with `JAVA_HOME`, Node.js 22.18+ / npm 11+, and Docker (only for optional Oracle)
+- **Backend:** `cd backend && ./mvnw spring-boot:run`
+- **Frontend:** `cd frontend && npm install && npm run dev`
+- **Open:** `http://localhost:5173`
 
-The page has an add form (patient reference, specialist office, follow-up date) above a referral table with a status dropdown and Save per row. A referral shows Overdue when its follow-up date is before today and its status is not Done; today is not overdue.
+The Vite dev server proxies `/api` to the backend, so the browser always talks to `http://localhost:5173`. With no Oracle environment variables set, the backend uses a local H2 file at `backend/data/` and starts immediately — point it at Oracle to persist for real (see [Database setup](#database-setup)).
 
-Vue 3 + Vite with plain JavaScript and CSS (no Router, Pinia, component lib). Java 21 Spring Boot API (`backend/pom.xml` pins Boot 3.5.16), Spring Data JPA against Oracle Database Free.
+## What's inside
 
-## Demo data only
+- **`frontend/`** — Vue 3 + Vite, plain JavaScript and CSS (no Router, Pinia, or component library).
+- **`backend/`** — Spring Boot REST API (`GET/POST/PATCH /api/referrals`), Spring Data JPA, and a portable `schema.sql`.
+- **`docs/`** — the roadmap and diagrams that this README references.
 
-Use fictional references such as DEMO-101 and invented office names. Do not enter patient names, dates of birth, diagnoses, or clinical notes.
+## How it works
 
-This is a local learning application, not software for clinical use. No login, messaging, attachments, or connections to healthcare systems.
+- Status flows `NEW → SENT → DONE` and is freely reversible; saving the unchanged status is a harmless no-op.
+- A referral is **overdue** when its follow-up date is before today and its status is not `DONE`. Today is not overdue. Returning a past-due `DONE` referral to `SENT` makes it overdue again.
+- The backend calculates overdue on read; it is never stored as a column.
+- Bad input returns `400` with a `fieldErrors` object; an unknown referral id returns `404`; unexpected failures return a generic `500` with no database details.
 
-## Prerequisites
+## Database setup
 
-- Java 21 (or newer) with `JAVA_HOME` set
-- npm 11+ and Node.js 22.18+ (this was checked with Node 26.0.0 and npm 11.12.1)
-- Maven is not required directly; the backend ships the Maven wrapper (`./mvnw`), which downloads Maven on first run
-- A database: Oracle Database Free for the real path, or the built-in H2 fallback for local development without a database
-
-## Running the app
-
-Two local servers: the backend on `http://localhost:8080` and the frontend on `http://localhost:5173`. The Vite dev server proxies `/api` to the backend, so the browser always talks to `http://localhost:5173`.
-
-### 1. Start the backend
-
-```bash
-cd backend
-./mvnw spring-boot:run
-```
-
-The backend reads its database connection from environment variables. The defaults use a local H2 database, so it starts immediately with no Oracle setup:
+This app reads its datasource from environment variables, so it can run on H2 locally and Oracle in production with no code changes.
 
 | Variable | Default | Meaning |
 | --- | --- | --- |
@@ -60,27 +46,9 @@ The backend reads its database connection from environment variables. The defaul
 | `REFERREE_DB_DRIVER` | `org.h2.Driver` | Driver class |
 | `REFERREE_DB_DIALECT` | `org.hibernate.dialect.H2Dialect` | Hibernate dialect |
 
-To point the app at Oracle, set those variables (see [Database setup](#database-setup)).
-
-### 2. Start the frontend
-
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-Open `http://localhost:5173`.
-
-### 3. Check the connection
-
-The home page calls `GET /api/health` and shows "Backend connected" when the backend is up, or "Backend unavailable" when it is not.
-
-## Database setup
-
 ### Oracle Database Free (recommended)
 
-Run Oracle locally or via Docker. Use the community `gvenzl/oracle-free` image, which ships a native `arm64` build (no Oracle account login needed). On Apple Silicon, avoid the `oracle-xe:21-full` image — it is amd64 and runs under Rosetta, which cannot start its background processes.
+Use the community `gvenzl/oracle-free` image, which ships a native `arm64` build and needs no Oracle account. On Apple Silicon, avoid `oracle-xe:21-full` — it is `amd64` and runs under Rosetta, which cannot start its background processes.
 
 Oracle Free needs at least ~2 GB of RAM. Make sure Docker (or Colima) has at least 2–4 GB allocated to it:
 
@@ -99,14 +67,7 @@ docker run -d --name oracle-free \
   gvenzl/oracle-free:latest
 ```
 
-Wait a few minutes for first init, then confirm the pluggable database is open:
-
-```bash
-docker logs oracle-free --follow
-# Wait for: "Pluggable database FREEPDB1 opened read write"
-```
-
-Then start the backend against Oracle:
+Wait for `Pluggable database FREEPDB1 opened read write`, then:
 
 ```bash
 cd backend
@@ -126,17 +87,13 @@ With no environment variables set, the backend uses a local H2 database stored a
 
 ## Demo walkthrough
 
-1. Start the backend and frontend as above.
-2. Open `http://localhost:5173`.
-3. In the **Add a referral** form, enter:
-   - Patient reference: `DEMO-101`
-   - Specialist office: `Cardiology West`
-   - Follow-up date: *any past date this week*
-4. Click **Add**. The referral appears in the table with an **Overdue** label, because its follow-up date is in the past and its status is New.
-5. Open the status dropdown and choose **Done**. Click **Save**. The label changes to **Current** — a Done referral is never overdue.
-6. Open the dropdown again, choose **Sent**, and click **Save**. The **Overdue** label returns, because a past-due Sent referral is overdue again.
+1. Start the backend and frontend as above, then open `http://localhost:5173`.
+2. In the **Add a referral** form, enter patient reference `DEMO-101`, specialist office `Cardiology West`, and a follow-up date in the past.
+3. Click **Add**. The row appears with an **Overdue** label, because the follow-up date is in the past and the status is New.
+4. Open the status dropdown, choose **Done**, and click **Save**. The label switches to **Current** — a Done referral is never overdue.
+5. Open the dropdown again, choose **Sent**, and click **Save**. The **Overdue** label returns, because a past-due Sent referral is overdue again.
 
-Try submitting an empty form: messages appear beside each field and the values you typed are preserved.
+Try submitting an empty form: a message appears beside each field and the values you typed are preserved.
 
 ## Testing
 
@@ -145,13 +102,23 @@ cd backend
 ./mvnw test
 ```
 
-Tests run against H2 in Oracle mode: the referral REST API (create, list, status update, 400/404) and the overdue/status business rules (today is not overdue, a past outstanding referral is overdue, Done is never overdue, Done returned to Sent is overdue again).
+Tests run against H2 in Oracle mode: the referral REST API (create returns 201; list, status change, 404 on unknown id, 400 on invalid input) and the overdue/status rules (today is not overdue; a past outstanding referral is overdue; Done is never overdue; Done returned to Sent is overdue again).
+
+## Boundaries
+
+- One simulated coordinator — no accounts or permissions.
+- Specialist office is free text — no provider directory or separate provider table.
+- No detail page, dashboard, search, filters, or pagination.
+- No history, notes, priority, cancellation, deletion, or editing the original referral fields.
+- **Fictional data only.** Do not enter patient names, dates of birth, diagnoses, or clinical notes.
+
+This is a local learning application, not software for clinical use. There is no login, messaging, attachments, or integration with healthcare systems.
 
 ## Stopping the services
 
-- Backend (`spring-boot:run`): press `Ctrl+C` in its terminal to stop it.
-- Frontend (`npm run dev`): press `Ctrl+C` in its terminal to stop it.
-- Oracle (Docker): `docker stop -f oracle-free` to stop and remove the container.
+- Backend (`spring-boot:run`): press `Ctrl+C` in its terminal.
+- Frontend (`npm run dev`): press `Ctrl+C` in its terminal.
+- Oracle (Docker): `docker stop -f oracle-free`.
 - Colima: `colima stop` to shut down the whole Docker VM.
 
-When both servers are stopped, the H2 fallback database at `backend/data/` is left in place so the next start continues from it; delete that folder to reset.
+When the backend stops, the H2 fallback database at `backend/data/` is left in place so the next start continues from it; delete that folder to reset.
