@@ -37,6 +37,12 @@
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-data-jpa</artifactId>
     </dependency>
+    <!-- Ticket #1 only: lets the backend start before Oracle is configured. -->
+    <dependency>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
+      <scope>runtime</scope>
+    </dependency>
     <!-- S5: Oracle JDBC, runtime only. Boot does not manage this version. -->
     <dependency>
       <groupId>com.oracle.database.jdbc</groupId>

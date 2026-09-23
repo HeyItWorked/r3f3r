@@ -10,6 +10,12 @@ proposal.local.md
 backend/target/
 frontend/node_modules/
 frontend/dist/
+
+# Local configuration and data
+.env
+.env.*
+!.env.example
+.local/
 *.class
 
 # Logs
