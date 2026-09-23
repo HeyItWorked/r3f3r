@@ -114,7 +114,7 @@ If your container reports a different service name than `XE`, use that name in t
 
 ### H2 fallback
 
-With no environment variables set, the backend uses H2 in Oracle mode. This is for local development only — restart it and the data is gone.
+With no environment variables set, the backend uses a local H2 database stored at `backend/data/`. It persists across restarts; delete the `backend/data/` folder to start fresh. This is for local development only — use Oracle for anything real.
 
 ## Demo walkthrough
 

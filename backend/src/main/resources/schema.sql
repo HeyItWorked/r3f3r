@@ -1,7 +1,7 @@
 -- Oracle sequence + table for referral ids.
-CREATE SEQUENCE referral_seq START WITH 1 INCREMENT BY 1;
+CREATE SEQUENCE IF NOT EXISTS referral_seq START WITH 1 INCREMENT BY 1;
 
-CREATE TABLE referral (
+CREATE TABLE IF NOT EXISTS referral (
   id NUMBER(19) PRIMARY KEY,
   patient_reference VARCHAR2(30) NOT NULL,
   specialist_office VARCHAR2(100) NOT NULL,
