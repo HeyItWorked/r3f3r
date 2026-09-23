@@ -1,10 +1,10 @@
-# ReferralFlow
+# r3f3r
 
 Track specialist referrals and see which ones need a follow-up.
 
-ReferralFlow is a small practice project for recording a fictional patient reference, a specialist office, and a follow-up date. Staff will use one page to add referrals and change their status.
+r3f3r is a small practice project for recording a fictional patient reference, a specialist office, and a follow-up date. Staff will use one page to add referrals and change their status.
 
-The repository currently contains the build plan. The application has not been implemented, so there is nothing to run yet. Work is tracked in the [roadmap](docs/roadmap.md) and [GitHub issues](https://github.com/HeyItWorked/referralflow/issues).
+The repository currently contains the build plan. The application has not been implemented, so there is nothing to run yet. Work is tracked in the [roadmap](docs/roadmap.md) and [GitHub issues](https://github.com/HeyItWorked/r3f3r/issues).
 
 ## First version
 
