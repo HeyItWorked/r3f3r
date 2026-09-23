@@ -80,37 +80,45 @@ The home page calls `GET /api/health` and shows "Backend connected" when the bac
 
 ### Oracle Database Free (recommended)
 
-Run Oracle locally or via Docker. If you use Docker Hub directly, log in first:
+Run Oracle locally or via Docker. Use the community `gvenzl/oracle-free` image, which ships a native `arm64` build (no Oracle account login needed). On Apple Silicon, avoid the `oracle-xe:21-full` image — it is amd64 and runs under Rosetta, which cannot start its background processes.
+
+Oracle Free needs at least ~2 GB of RAM. Make sure Docker (or Colima) has at least 2–4 GB allocated to it:
 
 ```bash
-# Oracle's official image needs an Oracle account login.
-# The community gvenzl/oracle-xe image works without login:
-docker run -d --name oracle-free \
-  -p 1521:1521 \
-  -e ORACLE_PASSWORD=Oracle_password1 \
-  gvenzl/oracle-xe:21-full
+colima start --memory 4   # if using Colima
+docker info --format '{{.MemTotal}}'   # confirm >= 2 GiB
 ```
 
-Give it a few minutes to initialize, then confirm the listener is up:
+```bash
+docker run -d --name oracle-free \
+  -p 1521:1521 \
+  --shm-size=2g \
+  -e ORACLE_PASSWORD=Oracle_password1 \
+  -e APP_USER=referree \
+  -e APP_USER_PASSWORD=referree_pw \
+  gvenzl/oracle-free:latest
+```
+
+Wait a few minutes for first init, then confirm the pluggable database is open:
 
 ```bash
 docker logs oracle-free --follow
-# Wait for: "Database instance created." then: "HOST_XE is ready."
+# Wait for: "Pluggable database FREEPDB1 opened read write"
 ```
 
 Then start the backend against Oracle:
 
 ```bash
 cd backend
-REFERREE_DB_URL=jdbc:oracle:thin:@//localhost:1521/XE \
-REFERREE_DB_USER=SYSTEM \
-REFERREE_DB_PASSWORD=Oracle_password1 \
+REFERREE_DB_URL=jdbc:oracle:thin:@//localhost:1521/FREEPDB1 \
+REFERREE_DB_USER=referree \
+REFERREE_DB_PASSWORD=referree_pw \
 REFERREE_DB_DRIVER=oracle.jdbc.OracleDriver \
 REFERREE_DB_DIALECT=org.hibernate.dialect.OracleDialect \
 ./mvnw spring-boot:run
 ```
 
-If your container reports a different service name than `XE`, use that name in the JDBC URL instead.
+If your container reports a different service name than `FREEPDB1`, use that name in the JDBC URL instead.
 
 ### H2 fallback
 
