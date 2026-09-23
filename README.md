@@ -50,11 +50,11 @@ cd backend
 ./mvnw spring-boot:run
 ```
 
-The backend reads its database connection from environment variables. The defaults use an in-memory H2 database, so it starts immediately with no Oracle setup:
+The backend reads its database connection from environment variables. The defaults use a local H2 database, so it starts immediately with no Oracle setup:
 
 | Variable | Default | Meaning |
 | --- | --- | --- |
-| `REFERREE_DB_URL` | `jdbc:h2:mem:r3f3r;DB_CLOSE_DELAY=-1;MODE=Oracle` | JDBC URL |
+| `REFERREE_DB_URL` | `jdbc:h2:file:./data/r3f3r;DB_CLOSE_DELAY=-1;MODE=Oracle` | JDBC URL |
 | `REFERREE_DB_USER` | `sa` | Database user |
 | `REFERREE_DB_PASSWORD` | *(empty)* | Database password |
 | `REFERREE_DB_DRIVER` | `org.h2.Driver` | Driver class |
@@ -146,3 +146,12 @@ cd backend
 ```
 
 Tests run against H2 in Oracle mode: the referral REST API (create, list, status update, 400/404) and the overdue/status business rules (today is not overdue, a past outstanding referral is overdue, Done is never overdue, Done returned to Sent is overdue again).
+
+## Stopping the services
+
+- Backend (`spring-boot:run`): press `Ctrl+C` in its terminal to stop it.
+- Frontend (`npm run dev`): press `Ctrl+C` in its terminal to stop it.
+- Oracle (Docker): `docker stop -f oracle-free` to stop and remove the container.
+- Colima: `colima stop` to shut down the whole Docker VM.
+
+When both servers are stopped, the H2 fallback database at `backend/data/` is left in place so the next start continues from it; delete that folder to reset.
