@@ -1,74 +1,184 @@
-# r3f3r
+<h1 align="center">
+  <img src="frontend/public/icons/se98/clock.png" alt="r3f3r" width="48" valign="middle" /> r3f3r
+</h1>
 
-sorry this is just a simple project, still learning spring lol
+<p align="center">
+  <img src="https://img.shields.io/badge/Vue-3.5-42b883?style=flat&logo=vuedotjs&logoColor=white" alt="Vue 3.5" />
+  <img src="https://img.shields.io/badge/Vite-8-646CFF?style=flat&logo=vite&logoColor=white" alt="Vite 8" />
+  <img src="https://img.shields.io/badge/Spring%20Boot-3.5-6DB33F?style=flat&logo=springboot&logoColor=white" alt="Spring Boot 3.5" />
+  <img src="https://img.shields.io/badge/Java-21+-E76F00?style=flat&logo=openjdk&logoColor=white" alt="Java 21+" />
+  <img src="https://img.shields.io/badge/Oracle%20Free%20%7C%20H2-1c3d71?style=flat" alt="Databases: Oracle Database Free or H2" />
+  <img src="https://img.shields.io/badge/data-fictional%20only-ad2525?style=flat" alt="Fictional data only" />
+</p>
 
-Track specialist referrals and see which ones need a follow-up.
+<p align="center">
+  <strong>The referral follow-up tracker for one busy coordinator.</strong><br/>
+  Log specialist referrals, see what's overdue at a glance, and chase every follow-up from one compact SE98-style workbench.
+</p>
 
-TODO: will add usage for the new stuff (history, providers, print etc) later, for now just run it and see
+<h3 align="center"><a href="#quick-start"><ins>Run it locally</ins></a></h3>
 
-A single page: one add form, one table, one status dropdown per row. Overdue is computed on the backend and never stored. Built with Vue 3 + Vite and Java 21 Spring Boot, backed by Oracle Database Free.
+<p align="center">
+  <img src="docs/assets/readme-hero.png" alt="r3f3r workbench: a referral table with overdue rows flagged in red, filters, and the Create/Save/Refresh toolbar" width="960" />
+</p>
 
-![Request path](docs/diagrams/architecture.svg)
+## Features
 
-One call path: native `fetch` from the browser, through a Vite proxy, to Spring. Three endpoints — list, create, patch status — and a status machine the user can reverse any time.
+<table>
+<tr>
+<td width="50%" valign="middle">
 
-![Status states](docs/diagrams/state.svg)
-![API sequence](docs/diagrams/sequence.svg)
-![Referral record](docs/diagrams/data-model.svg)
+### Due-Date Views
 
-## Quick start
+One **Due** filter — All dates, Overdue, Due today, Next 7 days — stacks with Find and Status. Day counts come from the backend, so the browser's timezone can't move a referral between views.
 
-- **Prerequisites:** Java 21+ with `JAVA_HOME`, Node.js 22.18+ / npm 11+, and Docker (only for optional Oracle)
-- **Backend:** `cd backend && ./mvnw spring-boot:run`
-- **Frontend:** `cd frontend && npm install && npm run dev`
-- **Open:** `http://localhost:5173`
+[Spec →](docs/extension-spec.md#s2--due-date-views)
 
-The Vite dev server proxies `/api` to the backend, so the browser always talks to `http://localhost:5173`. With no Oracle environment variables set, the backend uses a local H2 file at `backend/data/` and starts immediately — point it at Oracle to persist for real (see [Database setup](#database-setup)).
+</td>
+<td width="50%">
+  <img src="docs/assets/feature-due-views.png" alt="Due filter set to Overdue, showing three overdue referrals" width="100%" />
+</td>
+</tr>
+<tr>
+<td width="50%" valign="middle">
 
-## What's inside
+### Status History
 
-- **`frontend/`** — Vue 3 + Vite, plain JavaScript and CSS (no Router, Pinia, or component library).
-- **`backend/`** — Spring Boot REST API (`GET/POST/PATCH /api/referrals`), Spring Data JPA, and a portable `schema.sql`.
-- **`docs/`** — the roadmap and diagrams that this README references.
+Every real status change is recorded atomically with the update — the old status, the new one, and when. Saving the same status twice records nothing.
 
-## How it works
+[Spec →](docs/extension-spec.md#m1--status-history)
 
-- Status flows `NEW → SENT → DONE` and is freely reversible; saving the unchanged status is a harmless no-op.
-- A referral is **overdue** when its follow-up date is before today and its status is not `DONE`. Today is not overdue. Returning a past-due `DONE` referral to `SENT` makes it overdue again.
-- The backend calculates overdue on read; it is never stored as a column.
-- The loaded list can be explored entirely client-side — no extra API calls: a **Find** field that matches patient reference or specialist office, an **Overdue only** toggle, and sortable **Patient Ref**, **Specialist Office**, **Follow-up Date**, and **Status** headers (dates sort by their ISO values; the default order is the server's newest-first). The status bar shows "X of Y referrals" while a filter is active. If filtering would hide the selected row with an unsaved status change, the app asks before discarding it.
-- Bad input returns `400` with a `fieldErrors` object; an unknown referral id returns `404`; unexpected failures return a generic `500` with no database details.
+</td>
+<td width="50%">
+  <img src="docs/assets/feature-history.png" alt="Status History dialog listing three transitions" width="100%" />
+</td>
+</tr>
+<tr>
+<td width="50%" valign="middle">
 
-## Database setup
+### Reschedule in One Step
 
-This app reads its datasource from environment variables, so it can run on H2 locally and Oracle in production with no code changes.
+Move a follow-up date without recreating the referral. The row's overdue flag, due view, and counters update the moment the server confirms.
 
-| Variable | Default | Meaning |
-| --- | --- | --- |
-| `REFERREE_DB_URL` | `jdbc:h2:file:./data/r3f3r;DB_CLOSE_DELAY=-1;MODE=Oracle` | JDBC URL |
-| `REFERREE_DB_USER` | `sa` | Database user |
-| `REFERREE_DB_PASSWORD` | *(empty)* | Database password |
-| `REFERREE_DB_DRIVER` | `org.h2.Driver` | Driver class |
-| `REFERREE_DB_DIALECT` | `org.hibernate.dialect.H2Dialect` | Hibernate dialect |
+[Spec →](docs/extension-spec.md#s1--reschedule-follow-up)
 
-### Oracle Database Free (recommended)
+</td>
+<td width="50%">
+  <img src="docs/assets/feature-reschedule.png" alt="Reschedule dialog with the current and new follow-up date" width="100%" />
+</td>
+</tr>
+<tr>
+<td width="50%" valign="middle">
 
-Use the community `gvenzl/oracle-free` image, which ships a native `arm64` build and needs no Oracle account. On Apple Silicon, avoid `oracle-xe:21-full` — it is `amd64` and runs under Rosetta, which cannot start its background processes.
+### Contact-Attempt Log
 
-Oracle Free needs at least ~2 GB of RAM. Make sure Docker (or Colima) has at least 2–4 GB allocated to it:
+Record each phone or email attempt and its outcome, so nobody calls the same office twice. It logs only — it never sends a message or changes the referral.
+
+[Spec →](docs/extension-spec.md#m3--contact-attempt-log)
+
+</td>
+<td width="50%">
+  <img src="docs/assets/feature-contact-log.png" alt="Log Contact Attempt dialog with channel, outcome, and two past attempts" width="100%" />
+</td>
+</tr>
+<tr>
+<td width="50%" valign="middle">
+
+### Provider Directory
+
+Keep specialist-office names consistent. Duplicates are caught regardless of case or outer spaces, and renaming a provider never rewrites past referrals.
+
+[Spec →](docs/extension-spec.md#m2--provider-directory)
+
+</td>
+<td width="50%">
+  <img src="docs/assets/feature-providers.png" alt="Provider Directory dialog with five providers and an Add field" width="100%" />
+</td>
+</tr>
+<tr>
+<td width="50%" valign="middle">
+
+### Pick a Provider on Create
+
+New referrals default to the directory, with an explicit **Enter office manually** escape hatch. Old free-text referrals keep working untouched.
+
+[Spec →](docs/extension-spec.md#m2--provider-directory)
+
+</td>
+<td width="50%">
+  <img src="docs/assets/feature-create.png" alt="Create Referral dialog with a provider chosen from the directory" width="100%" />
+</td>
+</tr>
+<tr>
+<td width="50%" valign="middle">
+
+### Printable Worklist
+
+Print exactly what's on screen — same filters, same order — as a plain black-and-white table with the filter context and a timestamp. No PDF service, just the browser.
+
+[Spec →](docs/extension-spec.md#s4--printable-worklist)
+
+</td>
+<td width="50%">
+  <img src="docs/assets/feature-print.png" alt="Print layout of the worklist with filter context and all five columns" width="100%" />
+</td>
+</tr>
+</table>
+
+**Also in the box:**
+
+- **[Days overdue](docs/extension-spec.md#s3--days-overdue)** — "1 day overdue" or "N days overdue" in the Attention column, using calendar-day math. `DONE` is never overdue.
+- **[Remembered table preferences](docs/extension-spec.md#s5--remember-table-preferences)** — Find, Status, Due view, and sort come back after a reload. Corrupt or blocked storage falls back to defaults.
+- **Reversible statuses** — `NEW → SENT → DONE` in any direction, whenever you need it.
+- **Unsaved-change guard** — asks before a filter, row switch, or dialog would throw away an edited status.
+- **Keyboard-friendly** — arrow keys move the selection, Enter saves, Escape closes any dialog that isn't mid-save.
+- **Honest errors** — every failure is `{ message, fieldErrors }` with a 400, 404, 409, or 500. No stack traces or SQL reach the browser.
+
+---
+
+## Built With
+
+A single-page Vue app talking to one Spring Boot API — no router, store, UI kit, or date library.
+
+<p>
+  <a href="https://vuejs.org"><kbd><img src="https://www.google.com/s2/favicons?domain=vuejs.org&sz=64" alt="Vue logo" width="16" valign="middle" /> Vue 3</kbd></a> &nbsp;
+  <a href="https://vite.dev"><kbd><img src="https://www.google.com/s2/favicons?domain=vite.dev&sz=64" alt="Vite logo" width="16" valign="middle" /> Vite</kbd></a> &nbsp;
+  <a href="https://spring.io/projects/spring-boot"><kbd><img src="https://www.google.com/s2/favicons?domain=spring.io&sz=64" alt="Spring logo" width="16" valign="middle" /> Spring Boot</kbd></a> &nbsp;
+  <a href="https://spring.io/projects/spring-data-jpa"><kbd><img src="https://www.google.com/s2/favicons?domain=spring.io&sz=64" alt="Spring logo" width="16" valign="middle" /> Spring Data JPA</kbd></a> &nbsp;
+  <a href="https://openjdk.org"><kbd><img src="https://www.google.com/s2/favicons?domain=openjdk.org&sz=64" alt="OpenJDK logo" width="16" valign="middle" /> Java 21</kbd></a> &nbsp;
+  <a href="https://www.oracle.com/database/free/"><kbd><img src="https://www.google.com/s2/favicons?domain=oracle.com&sz=64" alt="Oracle logo" width="16" valign="middle" /> Oracle Database Free</kbd></a> &nbsp;
+  <a href="https://h2database.com"><kbd><img src="https://www.google.com/s2/favicons?domain=h2database.com&sz=64" alt="H2 logo" width="16" valign="middle" /> H2</kbd></a> &nbsp;
+  <a href="https://github.com/nestoris/Win98SE"><kbd><img src="frontend/public/icons/se98/document-new.png" alt="SE98 icon" width="16" valign="middle" /> SE98 icons</kbd></a>
+</p>
+
+---
+
+## Quick Start
+
+**Prerequisites:** Java 21+ with `JAVA_HOME`, Node.js 22.18+ (or 24.12+) with npm 11+, and Docker only if you want Oracle.
 
 ```bash
-colima start --memory 4   # if using Colima
-docker info --format '{{.MemTotal}}'   # confirm >= 2 GiB
+# 1. Backend — Spring Boot on :8080, local H2 file database in backend/data/
+cd backend && ./mvnw spring-boot:run
+
+# 2. Frontend — Vite on :5173, proxies /api to the backend
+cd frontend && npm install && npm run dev
 ```
 
+Then open **http://localhost:5173**. With no database variables set, the backend starts immediately on H2 and keeps your data across restarts. Delete `backend/data/` to start fresh.
+
+<details>
+<summary><strong>Run on Oracle Database Free</strong></summary>
+
+<br/>
+
+Use the community `gvenzl/oracle-free` image. It ships a native `arm64` build and needs no Oracle account. On Apple Silicon, avoid `oracle-xe:21-full`: it's `amd64`, and under Rosetta its background processes won't start. Give Docker (or Colima) at least 2–4 GB of RAM.
+
 ```bash
-docker run -d --name oracle-free \
-  -p 1521:1521 \
-  --shm-size=2g \
+colima start --memory 4                    # if using Colima
+docker run -d --name oracle-free -p 1521:1521 --shm-size=2g \
   -e ORACLE_PASSWORD=Oracle_password1 \
-  -e APP_USER=referree \
-  -e APP_USER_PASSWORD=referree_pw \
+  -e APP_USER=referree -e APP_USER_PASSWORD=referree_pw \
   gvenzl/oracle-free:latest
 ```
 
@@ -84,66 +194,87 @@ REFERREE_DB_DIALECT=org.hibernate.dialect.OracleDialect \
 ./mvnw spring-boot:run
 ```
 
-If your container reports a different service name than `FREEPDB1`, use that name in the JDBC URL instead.
+| Variable | Default |
+| --- | --- |
+| `REFERREE_DB_URL` | `jdbc:h2:file:./data/r3f3r;DB_CLOSE_DELAY=-1;MODE=Oracle` |
+| `REFERREE_DB_USER` | `sa` |
+| `REFERREE_DB_PASSWORD` | *(empty)* |
+| `REFERREE_DB_DRIVER` | `org.h2.Driver` |
+| `REFERREE_DB_DIALECT` | `org.hibernate.dialect.H2Dialect` |
 
-### H2 fallback
+> [!WARNING]
+> The extension schema (history, contacts, providers) has only been verified on H2. `schema.sql` adds `referral.provider_id` with H2's `ADD COLUMN IF NOT EXISTS`, so an existing Oracle schema may need that column added by hand.
 
-With no environment variables set, the backend uses a local H2 database stored at `backend/data/`. It persists across restarts; delete the `backend/data/` folder to start fresh. This is for local development only — use Oracle for anything real.
+Stop Oracle with `docker stop oracle-free`, or `colima stop` to shut down the whole Docker VM.
 
-## Demo walkthrough
+</details>
 
-1. Start the backend and frontend as above, then open `http://localhost:5173`.
-2. In the **Add a referral** form, enter patient reference `DEMO-101`, specialist office `Cardiology West`, and a follow-up date in the past.
-3. Click **Add**. The row appears with an **Overdue** label, because the follow-up date is in the past and the status is New.
-4. Open the status dropdown, choose **Done**, and click **Save**. The label switches to **Current** — a Done referral is never overdue.
-5. Open the dropdown again, choose **Sent**, and click **Save**. The **Overdue** label returns, because a past-due Sent referral is overdue again.
+<details>
+<summary><strong>Production build</strong></summary>
 
-Try submitting an empty form: a message appears beside each field and the values you typed are preserved.
+<br/>
 
-## Production build
+`cd frontend && npm run build` writes static files to `frontend/dist/`. The `/api` proxy only exists in `npm run dev`, so the built app needs another route to the backend:
 
-`cd frontend && npm run build` outputs static files to `frontend/dist/`. The Vite
-dev proxy (`/api` → `http://localhost:8080`) only exists during `npm run dev`, so
-the built app must reach the backend another way:
+- **Same origin (recommended):** serve `dist/` and reverse-proxy `/api/*` to Spring Boot, e.g. nginx `location /api/ { proxy_pass http://localhost:8080; }`.
+- **Different origin:** bake in the URL with `VITE_API_BASE_URL=https://api.example.com/api npm run build`. The backend has no CORS config, so browsers will block this unless you add CORS headers.
 
-- **Same origin (recommended):** serve `dist/` from any static host and reverse-proxy
-  `/api/*` to the Spring Boot backend, e.g. nginx
-  `location /api/ { proxy_pass http://localhost:8080; }`. No CORS changes needed.
-- **Different origin:** inline the backend URL at build time:
-  `VITE_API_BASE_URL=https://api.example.com/api npm run build`. The backend has no
-  CORS configuration, so cross-origin browser requests will be blocked unless you add
-  CORS headers — the same-origin proxy avoids that.
+</details>
 
-This build has no authentication or permissions and is for fictional data only — do
-not point it at real patient records.
+---
 
-## Testing
+## Developing
 
-tests should pass i think
+- **Tests:** `cd backend && ./mvnw test` runs JUnit and MockMvc against in-memory H2 in Oracle mode. The frontend has a build check (`npm run build`) but no test suite yet.
+- **Dev container:** `.devcontainer/` includes a Node 20 image with an outbound firewall. Open the folder in VS Code and choose **Reopen in Container**.
+- **Proxy target:** the Vite proxy defaults to `:8080`. Set `API_TARGET=http://localhost:8081` to point a second dev server at a separate backend.
+- **Docs:** the [roadmap](docs/roadmap.md), the [extension spec](docs/extension-spec.md) behind every feature above, and the [design brief](docs/design-brief.md).
 
-```bash
-cd backend
-./mvnw test
-```
+<details>
+<summary><strong>API at a glance</strong></summary>
 
-Tests run against H2 in Oracle mode: the referral REST API (create returns 201; list, status change, 404 on unknown id, 400 on invalid input) and the overdue/status rules (today is not overdue; a past outstanding referral is overdue; Done is never overdue; Done returned to Sent is overdue again).
+<br/>
+
+| Method | Path | Does |
+| --- | --- | --- |
+| `GET` | `/api/referrals` | List referrals, newest first, with `overdue`, `daysUntilFollowUp`, `daysOverdue` |
+| `POST` | `/api/referrals` | Create with `specialistOffice` **or** `providerId` (always starts `NEW`) |
+| `PATCH` | `/api/referrals/{id}/status` | Set `NEW` / `SENT` / `DONE`; real changes are recorded in history |
+| `PATCH` | `/api/referrals/{id}/follow-up-date` | Reschedule (`YYYY-MM-DD`) |
+| `GET` | `/api/referrals/{id}/history` | Status changes, newest first |
+| `GET` `POST` | `/api/referrals/{id}/contact-attempts` | List or record `PHONE`/`EMAIL` attempts |
+| `GET` `POST` | `/api/providers` | List or add providers |
+| `PATCH` | `/api/providers/{id}` | Rename a provider |
+| `GET` | `/api/health` | Liveness check |
+
+</details>
+
+<details>
+<summary><strong>Architecture diagrams</strong></summary>
+
+<br/>
+
+![Request path](docs/diagrams/architecture.svg)
+![Status states](docs/diagrams/state.svg)
+![API sequence](docs/diagrams/sequence.svg)
+![Referral record](docs/diagrams/data-model.svg)
+
+</details>
+
+---
 
 ## Boundaries
 
-- One simulated coordinator — no accounts or permissions.
-- Specialist office is free text — no provider directory or separate provider table.
-- Find/sort are client-side over the loaded list — there is no server-side search, saved views, export, or pagination.
-- No detail page or dashboard.
-- No history, notes, priority, cancellation, deletion, or editing the original referral fields.
-- **Fictional data only.** Do not enter patient names, dates of birth, diagnoses, or clinical notes.
+r3f3r is a local learning app, not clinical software.
 
-This is a local learning application, not software for clinical use. There is no login, messaging, attachments, or integration with healthcare systems.
+- **Fictional data only.** Never enter patient names, dates of birth, diagnoses, or clinical notes.
+- One simulated coordinator: no login, accounts, or permissions.
+- No messaging, attachments, calendar sync, deletion, pagination, or healthcare-system integrations.
 
-## Stopping the services
+## Credits
 
-- Backend (`spring-boot:run`): press `Ctrl+C` in its terminal.
-- Frontend (`npm run dev`): press `Ctrl+C` in its terminal.
-- Oracle (Docker): `docker stop -f oracle-free`.
-- Colima: `colima stop` to shut down the whole Docker VM.
+Toolbar icons come from the [SE98 icon theme](https://github.com/nestoris/Win98SE) (GPL-2.0). See [`ATTRIBUTION.md`](frontend/public/icons/se98/ATTRIBUTION.md) for the source of each file.
 
-When the backend stops, the H2 fallback database at `backend/data/` is left in place so the next start continues from it; delete that folder to reset.
+## License
+
+The project has no license file yet, so default copyright applies and all rights are reserved. The bundled SE98 icons keep their own [GPL-2.0 license](frontend/public/icons/se98/LICENSE).
