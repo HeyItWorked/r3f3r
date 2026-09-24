@@ -1,11 +1,15 @@
 package com.r3f3r.referrals;
 
-// What the frontend reads. Dates are formatted YYYY-MM-DD as plain strings.
+// response
 public class ReferralResponse {
-    public Long id;
-    public String patientReference;
-    public String specialistOffice;
-    public String followUpDate;
-    public String status;
-    public boolean overdue;
+    public Long id; // id
+    public String patientReference; // patient reference
+    public String specialistOffice; // office
+    public String followUpDate; // date
+    public String status; // status
+    public boolean overdue; // overdue
+    public long daysUntilFollowUp; // days until
+    public long daysOverdue; // days overdue
+    public Long providerId; // provider id
+    // public String department;
 }

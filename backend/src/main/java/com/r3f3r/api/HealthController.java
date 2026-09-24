@@ -8,8 +8,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api")
 class HealthController {
 
+    // health check (http://localhost:8080/api/health)
     @GetMapping("/health")
     HealthResponse health() {
+        System.out.println("health check called");
+        // TODO check the db too
         return new HealthResponse("UP");
     }
 

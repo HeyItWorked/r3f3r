@@ -19,31 +19,34 @@ public class Referral {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "referral_seq")
     @SequenceGenerator(name = "referral_seq", sequenceName = "referral_seq", allocationSize = 1)
     public Long id;
-
     @Column(name = "patient_reference", length = 30, nullable = false)
     public String patientReference;
-
     @Column(name = "specialist_office", length = 100, nullable = false)
     public String specialistOffice;
-
     @Column(name = "follow_up_date", nullable = false)
     public LocalDate followUpDate;
-
     @Column(length = 20, nullable = false)
     public String status = "NEW";
+    @Column(name = "provider_id")
+    public Long providerId; // null for old ones
 
     @Column(name = "created_at")
     public LocalDateTime createdAt = LocalDateTime.now();
 
-    // A referral is overdue when the follow-up date is before the backend's
-    // current date and it is not marked DONE. Today is not overdue.
+    // public boolean overdue; // dont store this!!
+
+    // overdue = not done and date before today
     public static boolean isOverdue(LocalDate followUpDate, String status, LocalDate today) {
-        if (followUpDate == null || status == null) {
-            return false;
+        boolean result = false;
+        if (followUpDate != null) {
+            if (status != null) {
+                if (!status.equals(Utils.STATUS_DONE)) {
+                    if (followUpDate.isBefore(today)) {
+                        result = true;
+                    }
+                }
+            }
         }
-        if ("DONE".equals(status)) {
-            return false;
-        }
-        return followUpDate.isBefore(today);
+        return result;
     }
 }

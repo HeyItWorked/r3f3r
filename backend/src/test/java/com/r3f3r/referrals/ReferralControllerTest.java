@@ -1,24 +1,22 @@
 package com.r3f3r.referrals;
 
 import java.time.LocalDate;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -26,7 +24,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
 @Transactional
-@Rollback
 class ReferralControllerTest {
 
     @Autowired
@@ -35,88 +32,72 @@ class ReferralControllerTest {
     @Autowired
     ReferralRepository repo;
 
-    @Autowired
-    ObjectMapper json;
+    Referral make(String ref, LocalDate date, String status) {
+        Referral r = new Referral();
+        r.patientReference = ref;
+        r.specialistOffice = "Office One";
+        r.followUpDate = date;
+        r.status = status;
+        return repo.save(r);
+    }
 
     @Test
-    void createsReferralAndReturns201() throws Exception {
-        Map<String, String> body = new LinkedHashMap<>();
-        body.put("patientReference", "DEMO-101");
-        body.put("specialistOffice", "Cardiology West");
-        body.put("followUpDate", "2099-01-01");
-
-        mvc.perform(MockMvcRequestBuilders.post("/api/referrals")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(json.writeValueAsString(body)))
+    void test1() throws Exception {
+        mvc.perform(post("/api/referrals").contentType(MediaType.APPLICATION_JSON)
+                .content("{\"patientReference\":\"DEMO-101\",\"specialistOffice\":\"Cardiology West\",\"followUpDate\":\"2099-01-01\"}"))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.referral.id", notNullValue()))
                 .andExpect(jsonPath("$.referral.status", is("NEW")));
     }
 
     @Test
-    void rejectsShortPatientReferenceWithFieldErrors() throws Exception {
-        Map<String, String> body = new LinkedHashMap<>();
-        body.put("patientReference", "ab");
-        body.put("specialistOffice", "Office");
-        body.put("followUpDate", "2099-01-01");
-
-        mvc.perform(MockMvcRequestBuilders.post("/api/referrals")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(json.writeValueAsString(body)))
+    void test2() throws Exception {
+        mvc.perform(post("/api/referrals").contentType(MediaType.APPLICATION_JSON)
+                .content("{\"patientReference\":\"ab\",\"specialistOffice\":\"Office\",\"followUpDate\":\"2099-01-01\"}"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message", is("Invalid referral")))
                 .andExpect(jsonPath("$.fieldErrors.patientReference", is("3 to 30 characters required")));
     }
 
     @Test
-    void listsReferralsWithOverdueFlag() throws Exception {
-        Referral pastNew = new Referral();
-        pastNew.patientReference = "DEMO-100";
-        pastNew.specialistOffice = "Office One";
-        pastNew.followUpDate = LocalDate.now().minusDays(1);
-        pastNew.status = "NEW";
-        repo.save(pastNew);
+    void test_works() throws Exception {
+        make("DEMO-100", LocalDate.now().minusDays(1), "NEW");
+        make("DEMO-100", LocalDate.now().minusDays(3), "DONE");
+        Thread.sleep(200); // wait for db to save
 
-        Referral pastDone = new Referral();
-        pastDone.patientReference = "DEMO-100";
-        pastDone.specialistOffice = "Office One";
-        pastDone.followUpDate = LocalDate.now().minusDays(3);
-        pastDone.status = "DONE";
-        repo.save(pastDone);
-
-        mvc.perform(MockMvcRequestBuilders.get("/api/referrals"))
+        // get referrals
+        mvc.perform(get("/api/referrals"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].overdue", is(false)))
                 .andExpect(jsonPath("$[1].overdue", is(true)));
     }
 
     @Test
-    void updatesStatusAndReturnsUpdatedRecord() throws Exception {
-        Referral referral = new Referral();
-        referral.patientReference = "DEMO-200";
-        referral.specialistOffice = "Office Two";
-        referral.followUpDate = LocalDate.now().plusDays(1);
-        referral.status = "NEW";
-        repo.save(referral);
-
-        Map<String, String> body = new LinkedHashMap<>();
-        body.put("status", "SENT");
-
-        mvc.perform(MockMvcRequestBuilders.patch("/api/referrals/{id}/status", referral.id)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(json.writeValueAsString(body)))
+    void test3() throws Exception {
+        Referral r = make("DEMO-200", LocalDate.now().plusDays(1), "NEW");
+        // do the patch
+        mvc.perform(patch("/api/referrals/{id}/status", r.id).contentType(MediaType.APPLICATION_JSON).content("{\"status\":\"SENT\"}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.referral.status", is("SENT")));
     }
 
     @Test
-    void patchOnUnknownIdReturns404() throws Exception {
-        Map<String, String> body = new LinkedHashMap<>();
-        body.put("status", "SENT");
-
-        mvc.perform(MockMvcRequestBuilders.patch("/api/referrals/{id}/status", 999)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(json.writeValueAsString(body)))
+    void test_final_v2() throws Exception {
+        mvc.perform(patch("/api/referrals/{id}/status", 999).contentType(MediaType.APPLICATION_JSON).content("{\"status\":\"SENT\"}"))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void test4() throws Exception {
+        Referral r = make("QA-1", LocalDate.now().minusDays(8), "NEW");
+        String sent = "{\"status\":\"SENT\"}";
+        mvc.perform(patch("/api/referrals/{id}/status", r.id).contentType(MediaType.APPLICATION_JSON).content(sent))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.referral.daysOverdue", is(8)));
+        mvc.perform(patch("/api/referrals/{id}/status", r.id).contentType(MediaType.APPLICATION_JSON).content(sent))
+                .andExpect(status().isOk());
+        mvc.perform(get("/api/referrals/{id}/history", r.id))
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[0].fromStatus", is("NEW")));
     }
 }

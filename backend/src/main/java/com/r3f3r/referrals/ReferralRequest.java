@@ -1,9 +1,10 @@
 package com.r3f3r.referrals;
 
-// A plain object with no behavior. Matches the JSON the form posts.
+// request
 public class ReferralRequest {
-    public String patientReference;
-    public String specialistOffice;
-    public String followUpDate;
-    public String status;
+    public String patientReference; // patient reference
+    public String specialistOffice; // office
+    public String followUpDate; // date
+    public String status; // status (ignored)
+    public Long providerId; // provider id
 }
