@@ -1,0 +1,28 @@
+# Local-only notes. Not part of the build.
+proposal.local.md
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Build output
+backend/target/
+frontend/node_modules/
+frontend/dist/
+
+# Local configuration and data
+.env
+.env.*
+!.env.example
+.local/
+*.class
+
+# Logs
+*.log
+
+# Editor / IDE
+.idea/
+*.iml
+.vscode/*
+!.vscode/settings.json

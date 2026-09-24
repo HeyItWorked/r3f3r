@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 1000 440" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="arch-title arch-desc">
+
+      <defs>
+        <pattern id="rules" width="28" height="28" patternUnits="userSpaceOnUse">
+          <line x1="0" y1="27" x2="28" y2="27" stroke="rgba(74,63,92,0.08)" stroke-width="1"/>
+        </pattern>
+        <marker id="arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#8E86A0"/></marker>
+        <marker id="arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#E4572E"/></marker>
+      </defs>
+
+      <rect width="100%" height="100%" fill="#FAF4E8"/>
+      <rect width="100%" height="100%" fill="url(#rules)" opacity="0.6"/>
+
+      <!-- Return edge: records + overdue (bottom) -->
+      <line x1="420" y1="216" x2="420" y2="300" stroke="#8E86A0" stroke-width="1.2"/>
+      <line x1="420" y1="300" x2="100" y2="300" stroke="#8E86A0" stroke-width="1.2"/>
+      <line x1="100" y1="300" x2="100" y2="220" stroke="#8E86A0" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <rect x="150" y="292" width="220" height="16" rx="2" fill="#FAF4E8"/>
+      <text x="260" y="304" fill="#8E86A0" font-size="11" font-family="'IBM Plex Mono', monospace" text-anchor="middle">records + overdue · YYYY-MM-DD</text>
+
+      <!-- Return edge: errors (top, accent stamp) -->
+      <line x1="420" y1="140" x2="420" y2="84" stroke="#E4572E" stroke-width="1.4"/>
+      <line x1="420" y1="84" x2="100" y2="84" stroke="#E4572E" stroke-width="1.4"/>
+      <line x1="100" y1="84" x2="100" y2="136" stroke="#E4572E" stroke-width="1.4" marker-end="url(#arrow-accent)"/>
+      <rect x="172" y="76" width="176" height="16" rx="8" fill="#FFFDFB" stroke="#E4572E" stroke-width="0.8"/>
+      <rect x="175" y="79" width="170" height="10" rx="5" fill="none" stroke="#E4572E" stroke-width="0.6" opacity="0.6"/>
+      <text x="260" y="88" fill="#E4572E" font-size="11" font-family="'IBM Plex Mono', monospace" text-anchor="middle">400 fieldErrors · 404</text>
+
+      <!-- Forward arrows -->
+      <line x1="168" y1="178" x2="188" y2="178" stroke="#8E86A0" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <line x1="328" y1="178" x2="348" y2="178" stroke="#8E86A0" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <line x1="488" y1="178" x2="508" y2="178" stroke="#8E86A0" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <line x1="648" y1="178" x2="668" y2="178" stroke="#8E86A0" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <line x1="808" y1="178" x2="828" y2="178" stroke="#8E86A0" stroke-width="1.2" marker-end="url(#arrow)"/>
+
+      <!-- Nodes -->
+      <rect x="32" y="140" width="136" height="76" rx="6" fill="#DFF0E3" stroke="#4A3F5C" stroke-width="1"/>
+      <text x="100" y="168" fill="#4A3F5C" font-size="14" font-weight="600" font-family="'Space Grotesk', sans-serif" text-anchor="middle">Vue page</text>
+      <text x="100" y="186" fill="#8E86A0" font-size="11" font-family="'IBM Plex Mono', monospace" text-anchor="middle">form + table</text>
+      <text x="100" y="200" fill="#8E86A0" font-size="11" font-family="'IBM Plex Mono', monospace" text-anchor="middle">fetch only</text>
+
+      <rect x="192" y="140" width="136" height="76" rx="6" fill="#E2E6F8" stroke="#4A3F5C" stroke-width="1"/>
+      <text x="260" y="168" fill="#4A3F5C" font-size="14" font-weight="600" font-family="'Space Grotesk', sans-serif" text-anchor="middle">Vite proxy</text>
+      <text x="260" y="186" fill="#8E86A0" font-size="11" font-family="'IBM Plex Mono', monospace" text-anchor="middle">/api → :8080</text>
+      <text x="260" y="200" fill="#8E86A0" font-size="11" font-family="'IBM Plex Mono', monospace" text-anchor="middle">dev only</text>
+
+      <rect x="352" y="140" width="136" height="76" rx="6" fill="rgba(228,87,46,0.12)" stroke="#E4572E" stroke-width="1"/>
+      <text x="420" y="168" fill="#4A3F5C" font-size="14" font-weight="600" font-family="'Space Grotesk', sans-serif" text-anchor="middle">Controller</text>
+      <text x="420" y="186" fill="#8E86A0" font-size="11" font-family="'IBM Plex Mono', monospace" text-anchor="middle">GET POST PATCH</text>
+      <text x="420" y="200" fill="#8E86A0" font-size="11" font-family="'IBM Plex Mono', monospace" text-anchor="middle">201 · 200</text>
+
+      <rect x="512" y="140" width="136" height="76" rx="6" fill="#FBEFD4" stroke="#4A3F5C" stroke-width="1"/>
+      <text x="580" y="168" fill="#4A3F5C" font-size="14" font-weight="600" font-family="'Space Grotesk', sans-serif" text-anchor="middle">Validation</text>
+      <text x="580" y="186" fill="#8E86A0" font-size="11" font-family="'IBM Plex Mono', monospace" text-anchor="middle">@Valid → 400</text>
+      <text x="580" y="200" fill="#8E86A0" font-size="11" font-family="'IBM Plex Mono', monospace" text-anchor="middle">3–30 · 1–100</text>
+
+      <rect x="672" y="140" width="136" height="76" rx="6" fill="#E8DFF3" stroke="#4A3F5C" stroke-width="1"/>
+      <text x="740" y="168" fill="#4A3F5C" font-size="14" font-weight="600" font-family="'Space Grotesk', sans-serif" text-anchor="middle">JPA</text>
+      <text x="740" y="186" fill="#8E86A0" font-size="11" font-family="'IBM Plex Mono', monospace" text-anchor="middle">Hibernate 6</text>
+      <text x="740" y="200" fill="#8E86A0" font-size="11" font-family="'IBM Plex Mono', monospace" text-anchor="middle">sequence ID</text>
+
+      <rect x="832" y="140" width="136" height="76" rx="6" fill="#F9DCD2" stroke="#4A3F5C" stroke-width="1"/>
+      <text x="900" y="168" fill="#4A3F5C" font-size="14" font-weight="600" font-family="'Space Grotesk', sans-serif" text-anchor="middle">Oracle Free</text>
+      <text x="900" y="186" fill="#8E86A0" font-size="11" font-family="'IBM Plex Mono', monospace" text-anchor="middle">one table</text>
+      <text x="900" y="200" fill="#8E86A0" font-size="11" font-family="'IBM Plex Mono', monospace" text-anchor="middle">survives restart</text>
+
+      <!-- Legend -->
+      <line x1="40" y1="368" x2="960" y2="368" stroke="rgba(74,63,92,0.14)" stroke-width="0.8"/>
+      <text x="40" y="384" fill="#8E86A0" font-size="10" font-family="'IBM Plex Mono', monospace" letter-spacing="0.18em">LEGEND · ACCENT CARRIES THE SEAM THAT DECIDES</text>
+      <rect x="40" y="396" width="24" height="12" rx="2" fill="rgba(228,87,46,0.12)" stroke="#E4572E" stroke-width="1"/>
+      <text x="72" y="406" fill="#8E86A0" font-size="10.5" font-family="'Space Grotesk', sans-serif">Controller: status codes + error shape</text>
+      <line x1="420" y1="402" x2="448" y2="402" stroke="#8E86A0" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <text x="456" y="406" fill="#8E86A0" font-size="10.5" font-family="'Space Grotesk', sans-serif">Request flow</text>
+      <line x1="620" y1="402" x2="648" y2="402" stroke="#E4572E" stroke-width="1.4" marker-end="url(#arrow-accent)"/>
+      <text x="656" y="406" fill="#8E86A0" font-size="10.5" font-family="'Space Grotesk', sans-serif">Error path</text>
+    </svg>

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 1000 480" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="er-title er-desc">
+
+      <defs>
+        <pattern id="rules" width="28" height="28" patternUnits="userSpaceOnUse">
+          <line x1="0" y1="27" x2="28" y2="27" stroke="rgba(74,63,92,0.08)" stroke-width="1"/>
+        </pattern>
+        <marker id="arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#8E86A0"/></marker>
+      </defs>
+
+      <rect width="100%" height="100%" fill="#FAF4E8"/>
+      <rect width="100%" height="100%" fill="url(#rules)" opacity="0.6"/>
+
+      <!-- Entity card -->
+      <rect x="280" y="36" width="440" height="56" rx="6" fill="#4A3F5C"/>
+      <text x="500" y="62" fill="#FAF4E8" font-size="15" font-weight="600" font-family="'Space Grotesk', sans-serif" text-anchor="middle" letter-spacing="0.08em">REFERRAL</text>
+      <text x="500" y="80" fill="#FAF4E8" font-size="11" font-family="'IBM Plex Mono', monospace" text-anchor="middle" opacity="0.72">1 table · fictional demo rows only</text>
+
+      <rect x="280" y="92" width="440" height="248" rx="0" fill="#FFFDFB" stroke="#4A3F5C" stroke-width="1"/>
+      <line x1="280" y1="132" x2="720" y2="132" stroke="#4A3F5C" stroke-width="1"/>
+      <line x1="280" y1="172" x2="720" y2="172" stroke="rgba(74,63,92,0.14)" stroke-width="1"/>
+      <line x1="280" y1="212" x2="720" y2="212" stroke="rgba(74,63,92,0.14)" stroke-width="1"/>
+      <line x1="280" y1="252" x2="720" y2="252" stroke="rgba(74,63,92,0.14)" stroke-width="1"/>
+      <line x1="280" y1="292" x2="720" y2="292" stroke="rgba(74,63,92,0.14)" stroke-width="1"/>
+      <rect x="280" y="293" width="440" height="47" fill="rgba(228,87,46,0.10)"/>
+
+      <text x="300" y="118" fill="#4A3F5C" font-size="13" font-weight="600" font-family="'IBM Plex Mono', monospace">id · LONG</text>
+      <text x="700" y="118" fill="#8E86A0" font-size="11" font-family="'IBM Plex Mono', monospace" text-anchor="end">PK · sequence</text>
+      <text x="300" y="158" fill="#4A3F5C" font-size="13" font-weight="600" font-family="'IBM Plex Mono', monospace">patientReference</text>
+      <text x="700" y="158" fill="#8E86A0" font-size="11" font-family="'IBM Plex Mono', monospace" text-anchor="end">trimmed · 3–30</text>
+      <text x="300" y="198" fill="#4A3F5C" font-size="13" font-weight="600" font-family="'IBM Plex Mono', monospace">specialistOffice</text>
+      <text x="700" y="198" fill="#8E86A0" font-size="11" font-family="'IBM Plex Mono', monospace" text-anchor="end">trimmed · 1–100</text>
+      <text x="300" y="238" fill="#4A3F5C" font-size="13" font-weight="600" font-family="'IBM Plex Mono', monospace">followUpDate</text>
+      <text x="700" y="238" fill="#8E86A0" font-size="11" font-family="'IBM Plex Mono', monospace" text-anchor="end">DATE · past allowed</text>
+      <text x="300" y="278" fill="#4A3F5C" font-size="13" font-weight="600" font-family="'IBM Plex Mono', monospace">status</text>
+      <text x="700" y="278" fill="#8E86A0" font-size="11" font-family="'IBM Plex Mono', monospace" text-anchor="end">TEXT · NEW SENT DONE</text>
+      <text x="300" y="318" fill="#4A3F5C" font-size="13" font-weight="600" font-family="'IBM Plex Mono', monospace">overdue</text>
+      <text x="700" y="318" fill="#E4572E" font-size="11" font-weight="600" font-family="'IBM Plex Mono', monospace" text-anchor="end">COMPUTED · never stored</text>
+
+      <!-- Side notes -->
+      <rect x="40" y="120" width="200" height="88" rx="6" fill="#FFFDFB" stroke="#4A3F5C" stroke-width="1"/>
+      <text x="60" y="148" fill="#4A3F5C" font-size="12" font-weight="600" font-family="'Space Grotesk', sans-serif">Duplicates OK</text>
+      <text x="60" y="166" fill="#8E86A0" font-size="11" font-family="'IBM Plex Mono', monospace">same reference,</text>
+      <text x="60" y="182" fill="#8E86A0" font-size="11" font-family="'IBM Plex Mono', monospace">many referrals</text>
+
+      <rect x="760" y="120" width="200" height="88" rx="6" fill="#FFFDFB" stroke="#4A3F5C" stroke-width="1"/>
+      <text x="780" y="148" fill="#4A3F5C" font-size="12" font-weight="600" font-family="'Space Grotesk', sans-serif">Display rule</text>
+      <text x="780" y="166" fill="#8E86A0" font-size="11" font-family="'IBM Plex Mono', monospace">API: NEW SENT DONE</text>
+      <text x="780" y="182" fill="#8E86A0" font-size="11" font-family="'IBM Plex Mono', monospace">UI: New Sent Done</text>
+
+      <rect x="40" y="232" width="200" height="88" rx="6" fill="#FFFDFB" stroke="#4A3F5C" stroke-width="1"/>
+      <text x="60" y="260" fill="#4A3F5C" font-size="12" font-weight="600" font-family="'Space Grotesk', sans-serif">Dates</text>
+      <text x="60" y="278" fill="#8E86A0" font-size="11" font-family="'IBM Plex Mono', monospace">YYYY-MM-DD</text>
+      <text x="60" y="294" fill="#8E86A0" font-size="11" font-family="'IBM Plex Mono', monospace">today ≠ overdue</text>
+
+      <rect x="760" y="232" width="200" height="88" rx="6" fill="rgba(228,87,46,0.10)" stroke="#E4572E" stroke-width="1"/>
+      <text x="780" y="260" fill="#4A3F5C" font-size="12" font-weight="600" font-family="'Space Grotesk', sans-serif">No clinical data</text>
+      <text x="780" y="278" fill="#8E86A0" font-size="11" font-family="'IBM Plex Mono', monospace">DEMO-101 only</text>
+      <text x="780" y="294" fill="#8E86A0" font-size="11" font-family="'IBM Plex Mono', monospace">no names · no notes</text>
+
+      <!-- Connectors -->
+      <line x1="240" y1="164" x2="276" y2="164" stroke="#8E86A0" stroke-width="1" marker-end="url(#arrow)"/>
+      <line x1="724" y1="164" x2="756" y2="164" stroke="#8E86A0" stroke-width="1" marker-end="url(#arrow)"/>
+      <line x1="240" y1="276" x2="276" y2="276" stroke="#8E86A0" stroke-width="1" marker-end="url(#arrow)"/>
+      <line x1="724" y1="276" x2="756" y2="276" stroke="#8E86A0" stroke-width="1" marker-end="url(#arrow)"/>
+
+      <!-- Legend -->
+      <line x1="40" y1="392" x2="960" y2="392" stroke="rgba(74,63,92,0.14)" stroke-width="0.8"/>
+      <text x="40" y="408" fill="#8E86A0" font-size="10" font-family="'IBM Plex Mono', monospace" letter-spacing="0.18em">LEGEND · ACCENT MARKS WHAT IS NOT A COLUMN</text>
+      <rect x="40" y="420" width="120" height="20" rx="2" fill="#FFFDFB" stroke="#4A3F5C" stroke-width="1"/>
+      <text x="100" y="434" fill="#8E86A0" font-size="10.5" font-family="'IBM Plex Mono', monospace" text-anchor="middle">stored column</text>
+      <text x="200" y="434" fill="#E4572E" font-size="10.5" font-weight="600" font-family="'IBM Plex Mono', monospace">computed on read</text>
+    </svg>

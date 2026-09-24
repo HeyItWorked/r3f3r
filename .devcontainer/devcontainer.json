@@ -1,0 +1,34 @@
+{
+  "name": "r3f3r development",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": "."
+  },
+  "features": {
+    "ghcr.io/devcontainers/features/node:2": {
+      "version": "22",
+      "npmVersion": "11"
+    },
+    "ghcr.io/devcontainers/features/java:1": {
+      "version": "21"
+    }
+  },
+  "runArgs": ["--cap-add=NET_ADMIN", "--cap-add=NET_RAW"],
+  "remoteUser": "node",
+  "postStartCommand": "sudo /usr/local/bin/init-firewall.sh",
+  "waitFor": "postStartCommand",
+  "forwardPorts": [5173, 8080],
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "Vue.volar",
+        "vscjava.vscode-java-pack",
+        "esbenp.prettier-vscode",
+        "eamodio.gitlens"
+      ],
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "zsh"
+      }
+    }
+  }
+}
