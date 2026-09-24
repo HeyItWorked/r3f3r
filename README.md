@@ -1,6 +1,10 @@
 # r3f3r
 
+sorry this is just a simple project, still learning spring lol
+
 Track specialist referrals and see which ones need a follow-up.
+
+TODO: will add usage for the new stuff (history, providers, print etc) later, for now just run it and see
 
 A single page: one add form, one table, one status dropdown per row. Overdue is computed on the backend and never stored. Built with Vue 3 + Vite and Java 21 Spring Boot, backed by Oracle Database Free.
 
@@ -32,6 +36,7 @@ The Vite dev server proxies `/api` to the backend, so the browser always talks t
 - Status flows `NEW → SENT → DONE` and is freely reversible; saving the unchanged status is a harmless no-op.
 - A referral is **overdue** when its follow-up date is before today and its status is not `DONE`. Today is not overdue. Returning a past-due `DONE` referral to `SENT` makes it overdue again.
 - The backend calculates overdue on read; it is never stored as a column.
+- The loaded list can be explored entirely client-side — no extra API calls: a **Find** field that matches patient reference or specialist office, an **Overdue only** toggle, and sortable **Patient Ref**, **Specialist Office**, **Follow-up Date**, and **Status** headers (dates sort by their ISO values; the default order is the server's newest-first). The status bar shows "X of Y referrals" while a filter is active. If filtering would hide the selected row with an unsaved status change, the app asks before discarding it.
 - Bad input returns `400` with a `fieldErrors` object; an unknown referral id returns `404`; unexpected failures return a generic `500` with no database details.
 
 ## Database setup
@@ -95,7 +100,26 @@ With no environment variables set, the backend uses a local H2 database stored a
 
 Try submitting an empty form: a message appears beside each field and the values you typed are preserved.
 
+## Production build
+
+`cd frontend && npm run build` outputs static files to `frontend/dist/`. The Vite
+dev proxy (`/api` → `http://localhost:8080`) only exists during `npm run dev`, so
+the built app must reach the backend another way:
+
+- **Same origin (recommended):** serve `dist/` from any static host and reverse-proxy
+  `/api/*` to the Spring Boot backend, e.g. nginx
+  `location /api/ { proxy_pass http://localhost:8080; }`. No CORS changes needed.
+- **Different origin:** inline the backend URL at build time:
+  `VITE_API_BASE_URL=https://api.example.com/api npm run build`. The backend has no
+  CORS configuration, so cross-origin browser requests will be blocked unless you add
+  CORS headers — the same-origin proxy avoids that.
+
+This build has no authentication or permissions and is for fictional data only — do
+not point it at real patient records.
+
 ## Testing
+
+tests should pass i think
 
 ```bash
 cd backend
@@ -108,7 +132,8 @@ Tests run against H2 in Oracle mode: the referral REST API (create returns 201; 
 
 - One simulated coordinator — no accounts or permissions.
 - Specialist office is free text — no provider directory or separate provider table.
-- No detail page, dashboard, search, filters, or pagination.
+- Find/sort are client-side over the loaded list — there is no server-side search, saved views, export, or pagination.
+- No detail page or dashboard.
 - No history, notes, priority, cancellation, deletion, or editing the original referral fields.
 - **Fictional data only.** Do not enter patient names, dates of birth, diagnoses, or clinical notes.
 
