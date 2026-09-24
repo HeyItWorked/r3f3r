@@ -32,8 +32,6 @@
 
 One **Due** filter — All dates, Overdue, Due today, Next 7 days — stacks with Find and Status. Day counts come from the backend, so the browser's timezone can't move a referral between views.
 
-[Spec →](docs/extension-spec.md#s2--due-date-views)
-
 </td>
 <td width="50%">
   <img src="docs/assets/feature-due-views.png" alt="Due filter set to Overdue, showing three overdue referrals" width="100%" />
@@ -45,8 +43,6 @@ One **Due** filter — All dates, Overdue, Due today, Next 7 days — stacks wit
 ### Status History
 
 Every real status change is recorded atomically with the update — the old status, the new one, and when. Saving the same status twice records nothing.
-
-[Spec →](docs/extension-spec.md#m1--status-history)
 
 </td>
 <td width="50%">
@@ -60,8 +56,6 @@ Every real status change is recorded atomically with the update — the old stat
 
 Move a follow-up date without recreating the referral. The row's overdue flag, due view, and counters update the moment the server confirms.
 
-[Spec →](docs/extension-spec.md#s1--reschedule-follow-up)
-
 </td>
 <td width="50%">
   <img src="docs/assets/feature-reschedule.png" alt="Reschedule dialog with the current and new follow-up date" width="100%" />
@@ -73,8 +67,6 @@ Move a follow-up date without recreating the referral. The row's overdue flag, d
 ### Contact-Attempt Log
 
 Record each phone or email attempt and its outcome, so nobody calls the same office twice. It logs only — it never sends a message or changes the referral.
-
-[Spec →](docs/extension-spec.md#m3--contact-attempt-log)
 
 </td>
 <td width="50%">
@@ -88,8 +80,6 @@ Record each phone or email attempt and its outcome, so nobody calls the same off
 
 Keep specialist-office names consistent. Duplicates are caught regardless of case or outer spaces, and renaming a provider never rewrites past referrals.
 
-[Spec →](docs/extension-spec.md#m2--provider-directory)
-
 </td>
 <td width="50%">
   <img src="docs/assets/feature-providers.png" alt="Provider Directory dialog with five providers and an Add field" width="100%" />
@@ -101,8 +91,6 @@ Keep specialist-office names consistent. Duplicates are caught regardless of cas
 ### Pick a Provider on Create
 
 New referrals default to the directory, with an explicit **Enter office manually** escape hatch. Old free-text referrals keep working untouched.
-
-[Spec →](docs/extension-spec.md#m2--provider-directory)
 
 </td>
 <td width="50%">
@@ -116,8 +104,6 @@ New referrals default to the directory, with an explicit **Enter office manually
 
 Print exactly what's on screen — same filters, same order — as a plain black-and-white table with the filter context and a timestamp. No PDF service, just the browser.
 
-[Spec →](docs/extension-spec.md#s4--printable-worklist)
-
 </td>
 <td width="50%">
   <img src="docs/assets/feature-print.png" alt="Print layout of the worklist with filter context and all five columns" width="100%" />
@@ -127,8 +113,8 @@ Print exactly what's on screen — same filters, same order — as a plain black
 
 **Also in the box:**
 
-- **[Days overdue](docs/extension-spec.md#s3--days-overdue)** — "1 day overdue" or "N days overdue" in the Attention column, using calendar-day math. `DONE` is never overdue.
-- **[Remembered table preferences](docs/extension-spec.md#s5--remember-table-preferences)** — Find, Status, Due view, and sort come back after a reload. Corrupt or blocked storage falls back to defaults.
+- **Days overdue** — "1 day overdue" or "N days overdue" in the Attention column, using calendar-day math. `DONE` is never overdue.
+- **Remembered table preferences** — Find, Status, Due view, and sort come back after a reload. Corrupt or blocked storage falls back to defaults.
 - **Reversible statuses** — `NEW → SENT → DONE` in any direction, whenever you need it.
 - **Unsaved-change guard** — asks before a filter, row switch, or dialog would throw away an edited status.
 - **Keyboard-friendly** — arrow keys move the selection, Enter saves, Escape closes any dialog that isn't mid-save.
@@ -228,7 +214,6 @@ Stop Oracle with `docker stop oracle-free`, or `colima stop` to shut down the wh
 - **Tests:** `cd backend && ./mvnw test` runs JUnit and MockMvc against in-memory H2 in Oracle mode. The frontend has a build check (`npm run build`) but no test suite yet.
 - **Dev container:** `.devcontainer/` includes a Node 20 image with an outbound firewall. Open the folder in VS Code and choose **Reopen in Container**.
 - **Proxy target:** the Vite proxy defaults to `:8080`. Set `API_TARGET=http://localhost:8081` to point a second dev server at a separate backend.
-- **Docs:** the [roadmap](docs/roadmap.md), the [extension spec](docs/extension-spec.md) behind every feature above, and the [design brief](docs/design-brief.md).
 
 <details>
 <summary><strong>API at a glance</strong></summary>

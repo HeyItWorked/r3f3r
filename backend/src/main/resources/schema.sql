@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS referral (
   status VARCHAR2(20) NOT NULL,
   created_at TIMESTAMP
 );
--- new stuff (extension spec)
+-- new stuff
 CREATE SEQUENCE IF NOT EXISTS history_seq START WITH 1 INCREMENT BY 1;
 CREATE TABLE IF NOT EXISTS referral_status_history (
   id NUMBER(19) PRIMARY KEY,
